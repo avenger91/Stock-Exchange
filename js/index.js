@@ -1,6 +1,11 @@
-const input = document.getElementById("user-input");
-const button = document.getElementById("search-button");
-const searchList = document.getElementById("search-list");
+const input = document.querySelector("input");
+const button = document.querySelector("button");
+const magnify = document.querySelector(".fa-magnifying-glass");
+const loadingSpinner = document.querySelector(".fa-spinner");
+const searchList = document.querySelector(".search-results");
+
+searchList.innerHTML = "";
+loadingSpinner.style.display = "none";
 
 const baseURL =
   "https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/";
@@ -14,6 +19,14 @@ button.addEventListener("click", function (event) {
   event.preventDefault();
   searchList.innerHTML = "";
 
+  magnify.style.display = "none";
+  loadingSpinner.style.display = "block";
+
+  setTimeout(() => {
+    magnify.style.display = "block";
+    loadingSpinner.style.display = "none";
+  }, 2000);
+
   getSearchData();
 });
 
@@ -21,7 +34,7 @@ async function getSearchData() {
   try {
     const response = await fetch(updateURL(input));
     const data = await response.json();
-    console.log(data);
+    //console.log(data);
 
     for (const company of data) {
       const { symbol } = company;
@@ -36,7 +49,7 @@ async function getMoreSearchData(symbol) {
   try {
     const response = await fetch(baseURL + `company/profile/${symbol}`);
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
 
     listSearchData(data);
   } catch (error) {
@@ -47,17 +60,31 @@ async function getMoreSearchData(symbol) {
 function listSearchData(data) {
   const { companyName, image, changesPercentage } = data.profile;
   const symbol = data.symbol;
+  const temporaryContainer = document.createDocumentFragment();
 
-  const listElement = document.createElement("li");
+  const listElement = document.createElement("div");
   const imageElement = document.createElement("img");
   const linkElement = document.createElement("a");
   const textElement = document.createElement("p");
+  const changesElement = document.createElement("p");
 
-  linkElement.textContent = companyName;
   linkElement.setAttribute("href", `company.html?symbol=${symbol}`);
   imageElement.setAttribute("src", `${image}`);
-  textElement.textContent = `${symbol} (${changesPercentage} %)`;
 
-  listElement.append(imageElement, linkElement, textElement);
-  searchList.appendChild(listElement);
+  if (changesPercentage < 0) {
+    changesElement.textContent = `${changesPercentage}%`;
+    changesElement.classList.add("red");
+  } else {
+    changesElement.textContent = `+${changesPercentage}%`;
+    changesElement.classList.add("green");
+  }
+
+  textElement.textContent = ` ${companyName} (${symbol}) `;
+  listElement.append(imageElement, linkElement, textElement, changesElement);
+  temporaryContainer.appendChild(listElement);
+  searchList.appendChild(temporaryContainer);
+
+  listElement.addEventListener("click", function () {
+    window.location.href = linkElement.getAttribute("href");
+  });
 }

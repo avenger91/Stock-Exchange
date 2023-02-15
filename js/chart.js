@@ -3,21 +3,20 @@ const stockHistoryURL =
 
 async function getHistoricalData() {
   const response = await fetch(stockHistoryURL);
-  console.log(response);
   const data = await response.json();
-  console.log(data);
   length = data.historical.length;
-  console.log(length);
 
   labels = [];
   values = [];
-  for (i = 0; i < length; i++) {
+  for (i = 0; i < length; i += 700) {
     labels.push(data.historical[i].date);
     values.push(data.historical[i].close);
   }
 
+  labels.sort((a, b) => new Date(a) - new Date(b));
+
   new Chart(document.getElementById("bar-chart"), {
-    type: "bar",
+    type: "line",
     data: {
       labels: labels,
       datasets: [
@@ -36,5 +35,4 @@ async function getHistoricalData() {
     },
   });
 }
-
 getHistoricalData();

@@ -1,3 +1,7 @@
+const companyData = document.querySelector(".company-data");
+const baseURL =
+  "https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/";
+
 function getUrlParameter(name) {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -8,13 +12,7 @@ function getUrlParameter(name) {
 }
 
 const symbol = getUrlParameter("symbol");
-
-const baseURL =
-  "https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/";
-
 const companyURL = baseURL + `company/profile/${symbol}`;
-
-const companyData = document.getElementById("company-data");
 
 async function getCompanyData() {
   try {
@@ -22,33 +20,23 @@ async function getCompanyData() {
     const data = await response.json();
     const {
       companyName,
-      address,
-      city,
-      state,
-      country,
       image,
       website,
       price,
       description,
-      range,
       changes,
       changesPercentage,
       currency,
-      ceo,
     } = data.profile;
 
-    console.log(data);
     const companyItem = document.createElement("div");
     companyItem.innerHTML = `
           <h2>${companyName}</h2>
-          <p>Stock Price: ${price} ${currency}</p>
-          <p>Range: ${range} ${currency}</p>
-          <p>Changes: ${changes} (${changesPercentage} %)</p>
+          <p> $${price} ${currency}</p>
+          <p> ${changes} (${changesPercentage} %)</p>
           <img src="${image}" alt="${companyName}" />
           <p>Website: <a href="${website}">${website}</a></p>
-          <p>Address: ${address}, ${city}, ${state}, ${country}</p>
-          <p>CEO: ${ceo}</p>
-          <p>Description: ${description}</p>
+             <p>Description: ${description}</p>
         `;
 
     companyData.appendChild(companyItem);
