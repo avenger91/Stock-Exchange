@@ -27,5 +27,3 @@ function displayMarqueeData(company) {
 }
 
 getMarqueeData();
-
-// create document fragment to seperate DOM manipulation from loops

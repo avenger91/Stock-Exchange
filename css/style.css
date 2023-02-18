@@ -6,26 +6,22 @@
 
 :root {
   --background-color: #292929;
+  --secondary-background: #1f1e1e21;
   --secondary-color: #464545;
   --highlight-color: #9b97979c;
   --font-main: rgb(236, 233, 233);
-  --font-secondary: #d4d4d4;
-  --red-color: #f56548;
-  --green-color: #7ff591;
-  --accent-1: #7bd9fe;
-  --accent-2: #f55ced;
-  --accent-3: #ef4564;
-  --accent-4: #51d8fa;
+  --font-secondary: #c4c1c1;
 }
 
 body {
   font-family: "Inter", sans-serif;
   background-color: var(--background-color);
-  color: var(--font-secondary);
+  color: var(--font-main);
   font-size: 1rem;
   letter-spacing: 0.01rem;
   word-spacing: 0.01rem;
   line-height: 1.5rem;
+  margin: 0;
 }
 
 main {
@@ -115,12 +111,84 @@ input:hover {
 .search-results > div:hover {
   background-color: rgba(245, 245, 245, 0.027);
   border-radius: 15px;
+  cursor: pointer;
+  filter: brightness(1.5);
 }
 
 .search-results > div > img,
 a,
 p {
-  padding: 5px;
+  padding: 4px;
+  color: var(--font-secondary);
+}
+.company-header {
+  margin: 0;
+  height: 100px;
+  background-color: #2e2c2eee;
+}
+
+.company-data {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 80%;
+  margin: auto auto;
+  padding-top: 30px;
+}
+
+.company-name {
+  width: 40%;
+}
+.company-name > a {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.company-name > p,
+.company-price > p {
+  margin: 0;
+  font-size: 1rem;
+  padding: 0;
+}
+
+.company-price {
+  width: 150px;
+  text-align: right;
+}
+
+.chart-wrapper {
+  width: 80%;
+  margin: 40px auto;
+}
+
+.company-text-wrapper {
+  width: 80%;
+  margin: 80px auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.company-description {
+  width: 60%;
+}
+
+.company-description > img {
+  float: left;
+  margin: 10px;
+}
+.company-description > p {
+  font-size: 0.9rem;
+  margin: 0;
+  color: var(--font-secondary);
+}
+
+.list-company-data {
+  margin: 0;
+  width: 25%;
+  list-style-type: none;
+  font-size: 0.9rem;
+  color: var(--font-secondary);
 }
 
 a:link,
@@ -131,12 +199,19 @@ a:visited {
 
 a:hover {
   text-decoration: none;
-  color: var(--accent-3);
+  color: pink;
 }
 
 a:active {
   text-decoration: none;
-  color: var(--accent-4);
+}
+
+.red {
+  color: #ef5350;
+}
+
+.green {
+  color: #4caf50;
 }
 
 img {
@@ -144,18 +219,11 @@ img {
   height: 30px;
 }
 
-.red {
-  color: var(--red-color);
-}
-
-.green {
-  color: var(--green-color);
-}
-
 .marquee {
-  height: 20px;
+  margin-top: 5px;
+  height: 30px;
   white-space: nowrap;
-  overflow: visible;
+  overflow: hidden;
   position: relative;
 }
 

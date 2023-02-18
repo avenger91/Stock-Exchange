@@ -1,56 +1,41 @@
-const input = document.querySelector("input");
-const button = document.querySelector("button");
-const magnify = document.querySelector(".fa-magnifying-glass");
-const loadingSpinner = document.querySelector(".fa-spinner");
-const searchList = document.querySelector(".search-results");
-
-searchList.innerHTML = "";
-loadingSpinner.style.display = "none";
-
-const baseURL =
-  "https://stock-exchange-dot-full-stack-course-services.ew.r.appspot.com/api/v3/";
-
-function updateURL(input) {
-  const URLlimit = `search?query=${input.value}&limit=10&exchange=NASDAQ`;
-  return baseURL + URLlimit;
+function resetSearch() {
+  searchList.innerHTML = "";
+  magnify.style.display = "block";
+  loadingSpinner.style.display = "none";
 }
 
-button.addEventListener("click", function (event) {
-  event.preventDefault();
-  searchList.innerHTML = "";
+resetSearch();
 
-  magnify.style.display = "none";
-  loadingSpinner.style.display = "block";
+function debounce(func, delay) {
+  let timeoutId;
+  return function () {
+    const args = arguments;
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(function () {
+      func.apply(null, args);
+    }, delay);
+  };
+}
 
-  setTimeout(() => {
-    magnify.style.display = "block";
-    loadingSpinner.style.display = "none";
-  }, 2000);
-
-  getSearchData();
-});
-
-async function getSearchData() {
+async function getSearchResults(input) {
   try {
-    const response = await fetch(updateURL(input));
+    const searchURL = `${baseURL}search?query=${input.value}&limit=10&exchange=NASDAQ`;
+    const response = await fetch(searchURL);
     const data = await response.json();
-    //console.log(data);
-
     for (const company of data) {
       const { symbol } = company;
-      getMoreSearchData(symbol);
+      getCompanyData(symbol);
     }
   } catch (error) {
     console.log(error);
   }
 }
 
-async function getMoreSearchData(symbol) {
+async function getCompanyData(symbol) {
   try {
-    const response = await fetch(baseURL + `company/profile/${symbol}`);
+    const getCompanyURL = baseURL + `company/profile/${symbol}`;
+    const response = await fetch(getCompanyURL);
     const data = await response.json();
-    // console.log(data);
-
     listSearchData(data);
   } catch (error) {
     console.log(error);
@@ -58,28 +43,23 @@ async function getMoreSearchData(symbol) {
 }
 
 function listSearchData(data) {
-  const { companyName, image, changesPercentage } = data.profile;
+  const { companyName, image, changes, changesPercentage } = data.profile;
   const symbol = data.symbol;
-  const temporaryContainer = document.createDocumentFragment();
 
+  const temporaryContainer = document.createDocumentFragment();
   const listElement = document.createElement("div");
   const imageElement = document.createElement("img");
   const linkElement = document.createElement("a");
   const textElement = document.createElement("p");
   const changesElement = document.createElement("p");
 
+  replaceBrokenImage(imageElement);
   linkElement.setAttribute("href", `company.html?symbol=${symbol}`);
   imageElement.setAttribute("src", `${image}`);
-
-  if (changesPercentage < 0) {
-    changesElement.textContent = `${changesPercentage}%`;
-    changesElement.classList.add("red");
-  } else {
-    changesElement.textContent = `+${changesPercentage}%`;
-    changesElement.classList.add("green");
-  }
-
   textElement.textContent = ` ${companyName} (${symbol}) `;
+  changesElement.textContent = formatChanges(changes, changesPercentage);
+  changesElement.classList.add(getChangesColor(changes));
+
   listElement.append(imageElement, linkElement, textElement, changesElement);
   temporaryContainer.appendChild(listElement);
   searchList.appendChild(temporaryContainer);
@@ -88,3 +68,25 @@ function listSearchData(data) {
     window.location.href = linkElement.getAttribute("href");
   });
 }
+
+input.addEventListener(
+  "input",
+  debounce(function () {
+    searchList.innerHTML = "";
+    getSearchResults(input);
+  }, delay)
+);
+
+button.addEventListener("click", function (event) {
+  event.preventDefault();
+  searchList.innerHTML = "";
+  magnify.style.display = "none";
+  loadingSpinner.style.display = "block";
+
+  setTimeout(function () {
+    magnify.style.display = "block";
+    loadingSpinner.style.display = "none";
+  }, delay);
+
+  getSearchResults(input);
+});
