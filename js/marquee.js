@@ -1,29 +1,61 @@
-const marqueeURL = baseURL + "stock/list";
-const marqueeElement = document.querySelector(".marquee-text");
+class Marquee {
+  constructor(marqueeURL, start, end) {
+    this.marqueeURL = marqueeURL;
+    this.start = start;
+    this.end = end;
+  }
 
-async function getMarqueeData() {
-  try {
-    const response = await fetch(marqueeURL);
-    const data = await response.json();
-    for (let i = 0; i < 10; i++) {
-      const company = data[i];
-      displayMarqueeData(company);
+  static async fetchData(marqueeURL) {
+    try {
+      const response = await fetch(marqueeURL);
+      const data = await response.json();
+      const companies = data.map((company) => ({
+        symbol: company.symbol,
+        price: company.price,
+      }));
+      const filteredData = companies.filter((data) => data !== null);
+      Marquee.data = filteredData;
+    } catch (error) {
+      console.log(error);
     }
-    for (let i = 10; i < 30; i++) {
-      const company = data[i];
-      displayMarqueeData(company);
+  }
+
+  createMarqueeElements() {
+    const companies = Marquee.data.slice(this.start, this.end);
+    const marqueeText = document.createElement("div");
+    marqueeText.classList.add("marquee-text");
+    marqueeText.classList.add("rainbow-letters");
+    companies.forEach((company) => {
+      Object.values(company).forEach((value) => {
+        const textElement = document.createElement("span");
+        textElement.textContent = ` ${value} `;
+        marqueeText.appendChild(textElement);
+      });
+    });
+
+    return marqueeText;
+  }
+
+  async marqueeLoop() {
+    const marqueeChild = document.createElement("div");
+    console.log(marqueeChild);
+    await Marquee.fetchData(this.marqueeURL);
+    for (let i = 0; i < 6; i++) {
+      const marqueeChildren = document.createElement("span");
+      const start = i * 20;
+      const end = (i + 1) * 500;
+      const marquee = new Marquee(this.marqueeURL, start, end);
+      const marqueeText = marquee.createMarqueeElements();
+      const randomPadding = Math.floor(Math.random() * 1) + 2;
+      marqueeText.style.paddingLeft = `${randomPadding}px`;
+      console.log(marqueeText);
+      console.log(marqueeChild);
+      marqueeChildren.append(marqueeText);
+      marqueeChild.appendChild(marqueeChildren);
     }
-  } catch (error) {
-    console.log(error);
+    marqueeElement.appendChild(marqueeChild);
   }
 }
 
-function displayMarqueeData(company) {
-  const symbol = company.symbol;
-  const price = company.price;
-  const textElement = document.createElement("span");
-  textElement.textContent = ` ${symbol} ${price} `;
-  marqueeElement.appendChild(textElement);
-}
-
-getMarqueeData();
+const marquee = new Marquee(marqueeURL, 0, 500);
+marquee.marqueeLoop();

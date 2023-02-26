@@ -17,47 +17,30 @@
       href="/favicon/favicon-32x32.png"
     />
   </head>
-  <body>
-    <!-- 
-    <header>
-      <nav>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Our team</a></li>
-          <li><a href="#">Projects</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </nav>
-    </header>
-      -->
-
-    <div class="marquee">
-      <p class="marquee-text rainbow-letters"></p>
+  <body class="main-page">
+    <div class="marquee-container">
+      <div class="marquee"></div>
+      <div class="marquee-fade-layer"></div>
+      <div class="marquee-fade"></div>
     </div>
-
     <main>
       <form role="search" class="search-form">
         <div class="search-field">
           <div class="input-wrapper">
             <input type="text" placeholder="Search Nasdaq Stocks" />
-            <!--add form validation-->
             <button>
               <i class="fa-solid fa-magnifying-glass"></i>
               <i class="fa-solid fa-spinner fa-spin"></i>
             </button>
           </div>
-          <div class="search-results-wrapper">
-            <div class="search-results"></div>
+          <div class="search-results-container">
+            <div class="search-results-wrapper">
+              <div class="search-results"></div>
+            </div>
           </div>
         </div>
       </form>
     </main>
-
-    <!-- 
-   <footer>
-      <p>blah blah blah ITC Evenings; made using HTML, CSS, JS</p>
-    </footer>
-       -->
     <script src="./js/global.js"></script>
     <script src="./js/index.js"></script>
     <script src="./js/marquee.js"></script>

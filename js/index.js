@@ -1,92 +1,78 @@
-function resetSearch() {
+const resetSearch = (() => {
   searchList.innerHTML = "";
   magnify.style.display = "block";
   loadingSpinner.style.display = "none";
-}
+})();
 
-resetSearch();
-
-function debounce(func, delay) {
+const debounce = (func, delay) => {
   let timeoutId;
   return function () {
     const args = arguments;
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(function () {
+    timeoutId = setTimeout(() => {
       func.apply(null, args);
     }, delay);
   };
-}
+};
 
 async function getSearchResults(input) {
   try {
     const searchURL = `${baseURL}search?query=${input.value}&limit=10&exchange=NASDAQ`;
     const response = await fetch(searchURL);
     const data = await response.json();
-    for (const company of data) {
-      const { symbol } = company;
-      getCompanyData(symbol);
-    }
+    const companies = data.map((company) => company.symbol);
+    const companyData = await Promise.all(companies.map(getCompanyData));
+    const searchResults = companyData.filter((data) => data !== null);
+    searchResults.forEach(listSearchResult);
   } catch (error) {
     console.log(error);
   }
 }
 
-async function getCompanyData(symbol) {
-  try {
-    const getCompanyURL = baseURL + `company/profile/${symbol}`;
-    const response = await fetch(getCompanyURL);
-    const data = await response.json();
-    listSearchData(data);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-function listSearchData(data) {
+const createResultsElement = (data) => {
   const { companyName, image, changes, changesPercentage } = data.profile;
   const symbol = data.symbol;
-
-  const temporaryContainer = document.createDocumentFragment();
   const listElement = document.createElement("div");
-  const imageElement = document.createElement("img");
-  const linkElement = document.createElement("a");
-  const textElement = document.createElement("p");
-  const changesElement = document.createElement("p");
-
-  replaceBrokenImage(imageElement);
-  linkElement.setAttribute("href", `company.html?symbol=${symbol}`);
-  imageElement.setAttribute("src", `${image}`);
-  textElement.textContent = ` ${companyName} (${symbol}) `;
-  changesElement.textContent = formatChanges(changes, changesPercentage);
-  changesElement.classList.add(getChangesColor(changes));
+  const imageElement = createImageElement(image);
+  const linkElement = createLinkElement(symbol);
+  const textElement = createTextElement(companyName, symbol);
+  const changesElement = createChangesElement(changes, changesPercentage);
 
   listElement.append(imageElement, linkElement, textElement, changesElement);
-  temporaryContainer.appendChild(listElement);
-  searchList.appendChild(temporaryContainer);
-
-  listElement.addEventListener("click", function () {
+  listElement.addEventListener("click", () => {
     window.location.href = linkElement.getAttribute("href");
   });
-}
 
-input.addEventListener(
-  "input",
-  debounce(function () {
-    searchList.innerHTML = "";
-    getSearchResults(input);
-  }, delay)
-);
+  return listElement;
+};
 
-button.addEventListener("click", function (event) {
+const listSearchResult = (data) => {
+  const listElement = createResultsElement(data);
+  const temporaryContainer = document.createDocumentFragment();
+  temporaryContainer.appendChild(listElement);
+  searchList.appendChild(temporaryContainer);
+};
+
+const handleInput = () => {
+  searchList.innerHTML = "";
+  getSearchResults(input);
+};
+
+const handleButtonClick = (event) => {
   event.preventDefault();
   searchList.innerHTML = "";
   magnify.style.display = "none";
   loadingSpinner.style.display = "block";
 
-  setTimeout(function () {
+  setTimeout(() => {
     magnify.style.display = "block";
     loadingSpinner.style.display = "none";
   }, delay);
 
   getSearchResults(input);
-});
+
+  input.removeEventListener("input", handleInput);
+};
+
+button.addEventListener("click", handleButtonClick);
+input.addEventListener("input", debounce(handleInput, delay));

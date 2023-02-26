@@ -1,27 +1,23 @@
-function getUrlParameter(name) {
+const getUrlParameter = (name) => {
   name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
   const regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
   const results = regex.exec(location.search);
   return results === null
     ? ""
     : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+};
 
 const symbol = getUrlParameter("symbol");
 
-async function getCompanyData(symbol) {
-  try {
-    const getCompanyURL = baseURL + `company/profile/${symbol}`;
-    const response = await fetch(getCompanyURL);
-    const data = await response.json();
-    displayCompanyData(data);
-    listKeyCompanyData(data);
-  } catch (error) {
-    console.log(error);
+const getCompanyDataAsync = async () => {
+  const data = await getCompanyData(symbol);
+  if (data) {
+    createCompanyElements(data);
+    createCompanyList(data);
   }
-}
+};
 
-function displayCompanyData(data) {
+const createCompanyElements = (data) => {
   const {
     companyName,
     image,
@@ -32,33 +28,39 @@ function displayCompanyData(data) {
     description,
     currency,
   } = data.profile;
+
   const symbol = data.symbol;
+  const textElement = createPriceElement(price, currency);
+  const symbolElement = createSymbolElement(symbol);
+  const linkElement = createCompanyLinkElement(companyName, website);
+  const imageElement = createImageElement(image);
+  const descrElement = createDescriptionElement(description);
+  const changesElement = createChangesElement(changes, changesPercentage);
 
-  const textElement = document.createElement("p");
-  const symbolElement = document.createElement("span");
-  const linkElement = document.createElement("a");
-  const imageElement = document.createElement("img");
-  const descrElement = document.createElement("p");
+  appendCompanyDescr(imageElement, descrElement);
+  appendCompanyName(linkElement, symbolElement);
+  appendCompanyPrice(textElement, changesElement);
+};
 
-  replaceBrokenImage(imageElement);
-  linkElement.setAttribute("href", `${website}`);
-  imageElement.setAttribute("src", `${image}`);
+const appendCompanyDescr = (imageElement, descrElement) => {
+  const temporaryContainer = document.createDocumentFragment();
+  temporaryContainer.append(imageElement, descrElement);
+  companyDescription.append(temporaryContainer);
+};
 
-  const changesElement = document.createElement("p");
-  changesElement.textContent = formatChanges(changes, changesPercentage);
-  changesElement.classList.add(getChangesColor(changes));
+const appendCompanyName = (linkElement, symbolElement) => {
+  const temporaryContainer = document.createDocumentFragment();
+  temporaryContainer.append(linkElement, symbolElement);
+  companyNameElement.append(temporaryContainer);
+};
 
-  linkElement.textContent = companyName;
-  symbolElement.textContent = `(${symbol})`;
-  textElement.textContent = ` $${price} ${currency}`;
-  descrElement.textContent = description;
+const appendCompanyPrice = (textElement, changesElement) => {
+  const temporaryContainer = document.createDocumentFragment();
+  temporaryContainer.append(textElement, changesElement);
+  companyPriceElement.append(temporaryContainer);
+};
 
-  companyDescription.append(imageElement, descrElement);
-  companyNameElement.append(linkElement, symbolElement);
-  companyPriceElement.append(textElement, changesElement);
-}
-
-function listKeyCompanyData(data) {
+const createCompanyList = (data) => {
   const {
     exchangeShortName,
     sector,
@@ -79,11 +81,17 @@ function listKeyCompanyData(data) {
     { name: "Average Volume", value: volAvg },
   ];
 
-  dataArr.forEach((item) => {
+  appendListFragments(dataArr);
+};
+
+const appendListFragments = (dataArr) => {
+  const temporaryContainer = document.createDocumentFragment();
+  for (const item of dataArr) {
     const listItem = document.createElement("li");
     listItem.textContent = `${item.name}: ${item.value}`;
-    listCompanyData.appendChild(listItem);
-  });
-}
+    temporaryContainer.appendChild(listItem);
+  }
+  listCompanyData.appendChild(temporaryContainer);
+};
 
-getCompanyData(symbol);
+getCompanyDataAsync();

@@ -1,6 +1,7 @@
+const ctx = document.getElementById("canvas").getContext("2d");
+const gradient = ctx.createLinearGradient(0, 0, 0, 400);
 const stockHistoryURL =
   baseURL + `historical-price-full/${symbol}?serietype=line`;
-const ctx = document.getElementById("canvas").getContext("2d");
 
 async function getHistoricalData() {
   const response = await fetch(stockHistoryURL);
@@ -9,14 +10,12 @@ async function getHistoricalData() {
 
   labels = [];
   values = [];
-  for (i = 0; i < length; i += 600) {
+  for (i = 0; i < length; i += 50) {
     labels.push(data.historical[i].date);
     values.push(data.historical[i].close);
   }
 
   labels.sort((a, b) => new Date(a) - new Date(b));
-
-  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
 
   gradient.addColorStop(0, "rgba(255,255,255,0)");
   gradient.addColorStop(1, " rgba(255,192,203,0.8");
@@ -33,7 +32,7 @@ async function getHistoricalData() {
           borderColor: "grey",
           borderWidth: 1,
           backgroundColor: gradient,
-          pointRadius: 2,
+          pointRadius: 1,
         },
       ],
     },

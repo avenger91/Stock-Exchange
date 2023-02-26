@@ -6,6 +6,7 @@
 
 :root {
   --background-color: #292929;
+  --background-alt: #1f1e1e;
   --secondary-background: #1f1e1e21;
   --secondary-color: #464545;
   --highlight-color: #9b97979c;
@@ -15,46 +16,59 @@
 
 body {
   font-family: "Inter", sans-serif;
-  background-color: var(--background-color);
+  background-color: #272626;
   color: var(--font-main);
   font-size: 1rem;
   letter-spacing: 0.01rem;
   word-spacing: 0.01rem;
   line-height: 1.5rem;
   margin: 0;
+  height: 100vh;
+}
+
+.main-page {
+  overflow: hidden;
 }
 
 main {
-  width: 100%;
-  height: 400px;
+  width: 90%;
+  height: 100%;
+  position: absolute;
+  top: 0%;
+  left: 5%;
 }
 
 form {
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin-top: 50px;
+  margin-top: 80px;
   height: 100%;
   width: 100%;
 }
 
 .search-field {
   border-radius: 50px;
-  width: 70%;
-  height: 20%;
-  padding: 10px;
-  background-color: rgba(245, 245, 245, 0.096);
+  width: 90%;
+  height: 80px;
+  position: absolute;
+  z-index: 5;
 }
 
 .input-wrapper {
   width: 100%;
   height: 100%;
+  border-radius: 50px;
+  padding: 10px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   padding-left: 10px;
+  background-color: #242323;
+  position: relative;
+  z-index: 4;
+  box-shadow: inset;
 }
 
 input {
@@ -66,6 +80,8 @@ input {
   background: none;
   color: var(--font-secondary);
   border: none;
+  position: relative;
+  z-index: 3;
 }
 
 input:focus {
@@ -74,7 +90,7 @@ input:focus {
 
 button {
   background-color: rgba(0, 0, 0, 0);
-  color: var(--highlight-color);
+  color: var(--secondary-color);
   border: none;
   border-radius: 50px;
   font-size: 2.5rem;
@@ -83,20 +99,48 @@ button {
   cursor: pointer;
 }
 
-button:hover,
-input:hover {
-  filter: brightness(1.2);
-}
-
 .fa-spinner {
   display: none;
 }
 
+.search-results-container {
+  width: 95%;
+  height: 80vh;
+  margin: 0 auto;
+  margin-top: -40px;
+  position: relative;
+  z-index: 2;
+  overflow: auto;
+}
+
+.search-results-container::-webkit-scrollbar {
+  width: 20px;
+}
+
+.search-results-container::-webkit-scrollbar-track {
+  background: #b1b1b1;
+}
+
+.search-results-container::-webkit-scrollbar-thumb {
+  background-color: #1f1e1eea;
+  border-radius: 10px;
+}
+
+button:hover,
+input:hover {
+  filter: brightness(1.2);
+}
 .search-results-wrapper {
-  padding: 20px;
-  margin-top: 30px;
   width: 100%;
+  padding: 10px;
+  margin-top: 0px;
+  margin: 0 auto;
   align-items: center;
+  padding-top: 30px;
+  position: relative;
+  background: #222121f3;
+  border-radius: 10px;
+  z-index: 1;
 }
 
 .search-results > div {
@@ -105,14 +149,16 @@ input:hover {
   align-items: center;
   justify-content: left;
   font-size: 1.1rem;
+  height: 50px;
   padding-left: 20px;
+  margin-top: 20px;
 }
 
 .search-results > div:hover {
-  background-color: rgba(245, 245, 245, 0.027);
-  border-radius: 15px;
+  background-color: rgba(245, 245, 245, 0.103);
+  border-radius: 30px;
+  height: 50px;
   cursor: pointer;
-  filter: brightness(1.5);
 }
 
 .search-results > div > img,
@@ -164,6 +210,7 @@ p {
 .company-text-wrapper {
   width: 80%;
   margin: 80px auto;
+  padding-bottom: 50px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -217,26 +264,38 @@ a:active {
 img {
   width: 30px;
   height: 30px;
+  border-radius: 50%;
+}
+
+.marquee-container {
+  width: 500vw;
+  height: 150vh;
+  position: absolute;
+  top: -20px;
+  left: -500vw;
 }
 
 .marquee {
-  margin-top: 5px;
-  height: 30px;
-  white-space: nowrap;
-  overflow: hidden;
-  position: relative;
+  height: 140%;
+  width: 200%;
+  animation: marquee 300s linear infinite;
 }
 
-.marquee p {
-  position: absolute;
-  width: 100%;
+.marquee-text {
   height: 100%;
-  margin: 0;
-  font-size: 1.5rem;
-  line-height: 20px;
-  text-align: center;
-  transform: translateX(100%);
-  animation: scroll-left 80s linear infinite;
+  font-size: 1rem;
+  line-height: 30px;
+  text-align: justify;
+  display: inline;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0); /* start the animation from 0 */
+  }
+  100% {
+    transform: translateX(-350vw); /* move the text to the left */
+  }
 }
 
 .rainbow-letters span:nth-child(10n + 1) {
@@ -251,12 +310,12 @@ img {
   color: #651fff;
 }
 
-.rainbow-letters span:nth-child(10n + 5) {
-  color: #3949ab;
-}
-
 .rainbow-letters span:nth-child(10n + 4) {
   color: #2196f3;
+}
+
+.rainbow-letters span:nth-child(10n + 5) {
+  color: #3949ab;
 }
 
 .rainbow-letters span:nth-child(10n + 6) {
@@ -269,13 +328,4 @@ img {
 
 .rainbow-letters span:nth-child(10n + 8) {
   color: #ffc107;
-}
-
-@keyframes scroll-left {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
 }
